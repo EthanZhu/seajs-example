@@ -8,7 +8,7 @@ seajs.config({
 //    	'jquery.min'		:	'jquery/1.7.2/jquery.min',
     	'jquery.cookie'		:	'jquery.cookie/jquery.cookie.module',
     	'jquery.md5'		:	'jquery.md5/jquery.md5.module',
-		'jquery.blockUI'	:	'jquery.blockUI/2.39/jquery.blockUI.module',
+		'jquery.blockUI'	:	'jquery.blockUI/2.39/jquery.blockUI.module'
 //		'ui.dialog'			:	'jquery.ui/1.8.18/ui.sea/jquery.ui.dialog'
   },
   debug : 2

@@ -3,17 +3,6 @@ define(function(require,exports){
 	//var initRemember = require('global/remember');
 	var tipMessage = require('./tipmessage');
 	var initPassword = require('./initpassword');
-	
-	
-	var //_formClass = config.formAction,
-		_inputClass = config.inputClass,
-		_labelClass = config.labelClass,
-		_formItem = config.formItem,
-		_formID = config.formID,
-		_rememberLabel = config.rememberLabel,
-		_rememberBox = config.rememberBox,
-		_submitButton = config.submitButton,
-		_submitMaster = config.submitMaster;
 		
 	
 	exports.init = function(){
@@ -51,48 +40,33 @@ define(function(require,exports){
 		},
 		
 		__inputInit : function(){
+			$(config.formID).delegate('input'+config.inputClass,'keypress focusin focusout', function(event){
+				var _config = config;
+				var $this = this;
+				var $obj = $(this);
+				var $items = $obj.parent(_config.formItem);
+				var type = event.type;
+				if($this.type=='password') _config.isInputPass = true;
+				if(type == 'keypress') $items.find(_config.labelClass).addClass('vh');
+				else if(type=='focusin'){
+					if($items.hasClass('error')){
+						$this.value='';
+						$items.removeClass('error').find(_config.labelClass).removeClass('vh');
+					}
+					var tipIndex = $items.index();
+					var taghtml = null ;
+					if(tipIndex==0) taghtml = _config.nameTipHtml;
+					else if(tipIndex==1) taghtml = _config.passTipHtml;
+					if(taghtml) __action.__focusTipMessage(tipIndex,taghtml,0);
+					$items.addClass('focus');
+				}
+				else if(type=="focusout"){
+					if(!$this.value) $items.removeClass('focus correct onshow').find(_config.labelClass).removeClass('vh');
+					else $items.removeClass('onshow');
+				}
+				_config = null;
+			})
 			
-				this.log('input init start');
-				$( _formID + ' ' + _inputClass ).each(function () {
-						var items = $(this).parent( _formItem);
-						//__action.log(items);
-						$(this).on('keypress focusin focusout blur change', function (event) {
-								var type = event.type; //获取事件类型 
-							//alert(type);
-								if ($(this).attr("id") == "userpass") {
-									config.isInputPass = true;
-								}
-								if (type == 'keypress'){
-									items.children(_labelClass).addClass('vh');
-								}
-								else if (type == 'focusin') {
-									if (items.hasClass('error')) {
-										$(this).val("");
-										items.children( _labelClass ).removeClass('vh');
-										items.removeClass('error');
-									}
-								//alert(items.index());
-									var tipIndex = items.index();
-									var taghtml = null ;
-									if(tipIndex==0) {
-											taghtml = config.nameTipHtml;
-										}else if(tipIndex==1){ 
-											taghtml = config.passTipHtml;
-										}
-									if(taghtml){ 
-											__action.__focusTipMessage(tipIndex,taghtml,0);
-										}
-									items.addClass('focus');
-								}
-								else if(type=="focusout"){
-									items.removeClass('onshow');
-								}
-								else if (!$(this).val()) {
-									items.children( _labelClass ).removeClass('vh');
-									items.removeClass('focus correct onshow');
-								}
-							})
-					});
 		},
 		
 		__boxChangeChecked : function(objBox,isChecked){
@@ -107,10 +81,10 @@ define(function(require,exports){
 		__rememberInit	:	function(){
 			var _isRemember = config.isRemember
 			if( _isRemember ){
-				this.__boxChangeChecked( _rememberBox , !_isRemember );
+				this.__boxChangeChecked( config.rememberBox , !_isRemember );
 			}
 			
-			var _events = $(_rememberLabel).data('events');
+			var _events = $(config.rememberLabel).data('events');
 			var _eventClick = null;
 			if(!_events){
 				this.__rememberBind();
@@ -123,12 +97,14 @@ define(function(require,exports){
 		},
 		
 		__rememberBind : function(){
-			this.log(_rememberLabel +' have been binded click event ');
-			$(_rememberLabel).on('click',function(){
+			this.log(config.rememberLabel +' have been binded click event ');
+			$(config.rememberLabel).on('click',function(){
 				var _this = __action;
-				_this.log(_rememberLabel+" have been clicked");
-				_this.__boxChangeChecked( _rememberBox , $(_rememberBox).attr('checked') );
+				var _config = config;
+				_this.__boxChangeChecked( _config.rememberBox , $(_config.rememberBox).attr('checked') );
+				_this = _config =null;
 			});
+			
 		},
 		
 		__setInputValue : function(inputs){
@@ -139,24 +115,28 @@ define(function(require,exports){
 		},	
 		
 		__checkInputValue : function(){
-			this.log('check input styles');
-			$(_formItem).each(function(){
-				if($(this).children(_inputClass).val()){
+			//this.log('check input styles');
+			$(config.formItem).each(function(){
+				var _config = config;
+				if($(this).children(_config.inputClass).val()){
 					$(this).addClass("focus");
-					$(this).children(_labelClass).addClass('vh');
+					$(this).find(_config.labelClass).addClass('vh');
 				}
-			})
+				_config = null;
+			});
 		},
 		__disabledInput : function(){
-			$(_formID+' input').attr('disabled', true);
-			$(_rememberLabel).off('click');
-			$(_submitButton).off('click');
+			var _config = config;
+			$(_config.formID).find('input').attr('disabled', true);
+			$(_config.rememberLabel).off('click');
+			$(_config.submitButton).off('click');
 			//$(_submitMaster).addClass("visibility");
 		},
 		__enabledInput : function(){
-			$(_formID+' input').attr('disabled', false);
+			var _config = config;
+			$(_config.formID).find('input').attr('disabled', false);
 			this.__rememberBind();
-			$(_submitMaster).removeClass("visibility");
+			$(config.submitMaster).removeClass("visibility");
 		},
 		__focusTipMessage : function(index,tipHtml,tag){
 			tipMessage.focusTipMessage(index,tipHtml,tag);
