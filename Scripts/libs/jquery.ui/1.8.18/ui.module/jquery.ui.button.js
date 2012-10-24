@@ -11,7 +11,7 @@
  *	jquery.ui.core.js
  *	jquery.ui.widget.js
  */
-define(function(require,exports,module){
+define(function(require,exports){
 	//require('jquery');
 	require('./jquery.ui.core');
 	require('./jquery.ui.widget');
